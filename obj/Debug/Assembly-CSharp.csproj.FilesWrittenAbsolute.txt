@@ -1,0 +1,13 @@
+/Users/Shared/Unity/Hungry Jelly/Temp/bin/Debug/UnityEngine.dll
+/Users/Shared/Unity/Hungry Jelly/Temp/bin/Debug/UnityEditor.dll
+/Users/Shared/Unity/Hungry Jelly/Temp/bin/Debug/UnityEngine.Networking.dll
+/Users/Shared/Unity/Hungry Jelly/Temp/bin/Debug/UnityEngine.UI.dll
+/Users/Shared/Unity/Hungry Jelly/Temp/bin/Debug/Mono.Cecil.dll
+/Users/Shared/Unity/Hungry Jelly/Temp/bin/Debug/Unity.SerializationLogic.dll
+/Users/Shared/Unity/Hungry Jelly/Temp/bin/Debug/Unity.DataContract.dll
+/Users/Shared/Unity/Hungry Jelly/Temp/bin/Debug/ICSharpCode.NRefactory.dll
+/Users/Shared/Unity/Hungry Jelly/Temp/bin/Debug/Unity.UNetWeaver.dll
+/Users/Shared/Unity/Hungry Jelly/Temp/bin/Debug/Unity.UNetWeaver.dll.mdb
+/Users/Shared/Unity/Hungry Jelly/Temp/bin/Debug/Unity.CecilTools.dll
+/Users/Shared/Unity/Hungry Jelly/Temp/bin/Debug/Mono.Cecil.Pdb.dll
+/Users/Shared/Unity/Hungry Jelly/Temp/bin/Debug/Mono.Cecil.Mdb.dll
