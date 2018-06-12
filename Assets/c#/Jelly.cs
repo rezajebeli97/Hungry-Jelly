@@ -1,168 +1,151 @@
 ﻿using UnityEngine;
 using UnityEngine.UI;
 using System.Collections;
+using System.IO;
+using System;
 
 public class Jelly : MonoBehaviour {
 	private Rigidbody2D myRigidbody,brickRigidbody;
 	private Vector2 velocityVector,vectorDown,vectorUp,initialLocale;
-	public GameObject Chocalte,Food,Brick/*,angryBrick*/;
-	private Animator myAnimator;
+//	private Animator myAnimator;
 	public Text showHealth;
-
 	private int maxLevel=2;
-	private bool jump = false, hit = false;
+	private bool jump = false ,stopJely = false, onJelly = false , pkrFace=false;
+	public Button pause,play;
+	public Image pockerFace;
+	private float stopTime,stopVelocityX,stopVelocityY;
 
 
-
-/////////////////////////////////////////////////////////////////////////////////////
+	///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 	void Start () {
+		pause = pause.GetComponent<Button> ();
 		myRigidbody = this.GetComponent<Rigidbody2D> ();
-		myAnimator = this.GetComponent<Animator> ();
-
-		print (Health_Level.level);
-//		brickRigidbody = Brick.GetComponent<Rigidbody2D> ();
-
+//		myAnimator = this.GetComponent<Animator> ();
 		showHealth.text = Health_Level.health.ToString();
-
 		initialLocale = myRigidbody.transform.position;
+
+		pockerFace.enabled = false;
 	}
 
 
-/////////////////////////////////////////////////////////////////////////////////////
+	///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 	void FixedUpdate () {
 
-		hit = false;
-
 		JumpJelly ();
+	
 
 		VelocityReduction ();
-		GameOver ();
-//		print (myRigidbody.velocity);
-//		MoveJelly ();
-//		if (Mathf.Abs( myRigidbody.velocity.x ) < 0.25 && Mathf.Abs( myRigidbody.velocity.y) < 0.25  && jump ) {
-//			print (myRigidbody.velocity.x);
-//			print (myRigidbody.velocity.y);
-//		}
+
+		StartCoroutine (coRoutineGameOver ());
+
 	}
 
-/////////////////////////////////////////////////////////////////////////////////////
+	///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-	private void OnCollisionEnter2D(Collision2D coll) {
-		switch (coll.gameObject.name) {
-
-//		case "Right":
-//			hit = true;
-//			break;
-//
-//		case "Left":
-//			hit = true;
-//			break;
-//
-//		case "Up":
-//			hit = true;
-//			break;
-//
-//		case "Down":
-//			hit = true;
-//			break;
-//
-//		case "BrickAngry":
-//			hit = true;
-//			break;
-
-//		case "Right":
-//			myAnimator.SetTrigger ("HitWallRight");
+//	private void OnCollisionEnter2D(Collision2D coll) {
+//		
+//		switch (coll.gameObject.tag) {
+//		case "wall":
 //			StopJelly ();
-//			for (int i = 0; i < 5000; i++) {
-//				print ("hello");
-//			}
 //			break;
-
-//		case "Brick":
-//			hit = true;
-	//		Destroy (Brick);
-	//		Instantiate(angryBrick , brickRigidbody.transform.position,brickRigidbody.transform.rotation);
+//
+//		case "rightwall":
+//			StopJelly ();
+//			myAnimator.SetTrigger ("HitRightWall");
 //			break;
+//		}
+//
+//	}
 
-		case "Chocolate":
-			Destroy (Chocalte);
+	///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+	private void OnTriggerEnter2D(Collider2D coll) {
+		switch (coll.gameObject.tag) {
+
+		case "star":
+			Destroy (coll.gameObject);
+			Health_Level.score += Health_Level.level * 10;
+			break;
+		
+		case "chocolate":
+			Destroy (coll.gameObject);
 			Health_Level.health++;
 			showHealth.text = Health_Level.health.ToString();
 			break;
 
-		case "Food":
-			Destroy (Food);
+		case "food":
+			Destroy (coll.gameObject);
 			jump = false;
 			myRigidbody.velocity = Vector2.zero;
 			levelUp ();
 			break;
 		}
-		
 	}
 
-/////////////////////////////////////////////////////////////////////////////////////
+	///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 	void levelUp(){
-		if (Health_Level.level == maxLevel) {
-			print ("tamoomesh kardi ke:|");
-		} 
-		else {
+		
 			Health_Level.level++;
-			print (Health_Level.level);
 			Application.LoadLevel (Health_Level.level);
-		}
+
 	}
 
-//////////////////////////////////////////////////////////////////////////////////
+	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-	private void StopJelly(){
-		float a = velocityVector.x;
-		float b = velocityVector.y;
+	public void StopJelly(){
+		stopVelocityX= velocityVector.x;
+		stopVelocityY= velocityVector.y;
 		velocityVector = Vector2.zero;
 		myRigidbody.velocity = velocityVector;
-	//	System.Threading.Thread.Sleep (1000);
-	
+		stopJely = true;
 	}
 
+	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-//////////////////////////////////////////////////////////////////////////////////
+	public void moveJelly(){
+		velocityVector.x = stopVelocityX;
+		velocityVector.y = stopVelocityY;
 
-	private void MoveJelly(){
-//		if()
-	
+		myRigidbody.velocity = velocityVector;
+		stopJely = false;
 	}
-		
-/////////////////////////////////////////////////////////////////////////////////////
+
+	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+	void OnMouseDown(){
+		vectorDown = Input.mousePosition;
+		onJelly = true;
+	}
+
+	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 	private void JumpJelly(){
+
 		if (!jump) {
 
-			if (Input.GetMouseButtonDown (0)) {
-				vectorDown = Input.mousePosition;
-			}
-
-			if (Input.GetMouseButtonUp (0) ) {
+			if (Input.GetMouseButtonUp (0) && onJelly) {
 
 				vectorUp = Input.mousePosition;
-
 			
+			
+					velocityVector.x = (vectorUp.x - vectorDown.x) / 50;
+					velocityVector.y = (vectorUp.y - vectorDown.y) / 50;
+					
+					myRigidbody.velocity = velocityVector;
 
-				velocityVector.x = (vectorUp.x - vectorDown.x)/35;
-				velocityVector.y = (vectorUp.y - vectorDown.y)/35;
-
-
-				myRigidbody.velocity = velocityVector;
-				if(vectorUp.x != vectorDown.x || vectorUp.y != vectorDown.y)
-				jump = true;
-			//	print (Input.mousePosition);
+				if (vectorUp.x != vectorDown.x || vectorUp.y != vectorDown.y ) {
+					jump = true;
+				}
+				onJelly = false;
 			}
 		}
 	
 	}
 
-//////////////////////////////////////////////////////////////////////////////////
+	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 	private void VelocityReduction(){
 		velocityVector = myRigidbody.velocity;
@@ -180,46 +163,81 @@ public class Jelly : MonoBehaviour {
 
 		myRigidbody.velocity = velocityVector;				//bug mide
 	}
-		
-//////////////////////////////////////////////////////////////////////////////////
 
-//	private void VelocityReduction(){
-//		//		velocityVector = myRigidbody.velocity;
-//
-//		if (myRigidbody.velocity.y > 0) {
-//			myRigidbody.velocity.y -= velocityVector.y/150;
-//		}
-//		else 
-//			myRigidbody.velocity.y -= myRigidbody.velocity.y/150;
-//
-//		if(myRigidbody.velocity.x > 0) 
-//			myRigidbody.velocity.x -= myRigidbody.velocity.x/150;
-//		else 
-//			myRigidbody.velocity.x -= myRigidbody.velocity.x/150;
-//
-////		myRigidbody.velocity = velocityVector;				//bug mide
-//	}
+	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-//////////////////////////////////////////////////////////////////////////////////
+	IEnumerator coRoutineGameOver(){
+		string savedHighScoreStr;
+		int savedHighScoreInt;
 
-	private void GameOver(){
-		if (Mathf.Abs( myRigidbody.velocity.x ) < 0.25 && Mathf.Abs( myRigidbody.velocity.y) < 0.25 && jump) {
+		if (   Mathf.Abs( myRigidbody.velocity.x ) < 0.35 && Mathf.Abs( myRigidbody.velocity.y) < 0.35 && jump && !stopJely && !pkrFace) {
 			
 			if (Health_Level.health == 0) {
 				Destroy (myRigidbody);
-				Application.LoadLevel (3);
-				return;
+				Application.LoadLevel (maxLevel+2); 			//load GameOver Scene
+				sentToServer(Health_Level.level , Health_Level.score , Health_Level.health , 4001);
 			} 
 
 			else {
+				pockerFace.enabled = true;
+				pkrFace = true;
+
+				yield return new WaitForSeconds (2);
+
 				Health_Level.health--;
 				showHealth.text = Health_Level.health.ToString();		//va inke jelle az paiine safhe shooroo be bazi kone
 				jump=false;
 				myRigidbody.transform.position = initialLocale;
 				myRigidbody.velocity = Vector2.zero;
+				pockerFace.enabled = false;
+				pkrFace = false;
+
 			}
 		}
 	
 	}
 
+
+
+	public void sentToServer(int name1 , int name2 , int name3 , int score){	
+		//http://saleh-khazaei.com/pacman/index.php?name=saleh&score=100
+		//	string url = "http://saleh-khazaei.com/pacman/index.php?name="+ name + "&score=" + Move.score.ToString();
+		//
+		string url = "http://saleh-khazaei.com/pacman/index.php?name="+ name1.ToString()+name2.ToString()+name3.ToString() +"&score="+ score.ToString();
+
+		//		WWWForm form = new WWWForm();
+		//		form.AddField("name",name);
+		//		form.AddField("Score", Move.score.ToString());
+		WWW www = new WWW(url);
+		StartCoroutine(WaitForRequest(www));
+	}
+
+
+
+	IEnumerator WaitForRequest(WWW www){
+		yield return www;
+
+		// check for errors
+		if (www.error == null){
+			print("WWW Ok!: " + www.text);
+		}
+		else{
+			print("WWW Error: " + www.error);
+		}
+	}
+
+
+
+
+//	public void PausePress(){
+//		StopJelly ();
+//	}
+//
+//	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+//	public void PlayPress(){
+//		moveJelly ();
+//	}
+
 }
+

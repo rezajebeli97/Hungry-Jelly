@@ -1,0 +1,14 @@
+<linker>
+	<assembly fullname="Assembly-CSharp">
+		<type fullname="Menu">
+			<method name="StartLevel"/>
+			<method name="ExitGame"/>
+		</type>
+		<type fullname="UserFinished">
+			<method name="StartLevel"/>
+			<method name="HomePress"/>
+			<method name="StartLevel"/>
+			<method name="HomePress"/>
+		</type>
+	</assembly>
+</linker>
